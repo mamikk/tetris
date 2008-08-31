@@ -1051,9 +1051,10 @@ int main(int argc, char *argv[])
     double fps = 0.0;
     double cur_timer = 0.0;
     static struct tetris tetris;
-    enum { INTRO, IN_GAME, GAME_OVER } game_mode = INTRO;
+    enum { INTRO, IN_GAME, GAME_OVER, PAUSE } game_mode = INTRO;
     double intro_start = 0.0;
     double game_over_start = 0.0;
+    double pause_start = 0.0;
     bool draw_ghost = true;
 
     (void)argc;
@@ -1122,6 +1123,15 @@ int main(int argc, char *argv[])
                         case SDLK_g:
                             draw_ghost = ! draw_ghost;
                             break;
+                        case SDLK_p:
+                            if (game_mode == IN_GAME) {
+                                game_mode = PAUSE;
+                                pause_start = cur_timer;
+                            } else if (game_mode == PAUSE) {
+                                game_mode = IN_GAME;
+                                tetris.next_update = cur_timer - pause_start;
+                            }
+                            break;
                         case SDLK_LEFT:
                             if (game_mode == IN_GAME) key_left(&tetris);
                             break;
@@ -1184,7 +1194,7 @@ int main(int argc, char *argv[])
         glLoadIdentity();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (game_mode == IN_GAME) {
+        if (game_mode == IN_GAME || game_mode == PAUSE) {
             draw(&tetris, cur_timer, draw_ghost);
         } else if (game_mode == INTRO) {
             intro(cur_timer - intro_start, cur_timer);
