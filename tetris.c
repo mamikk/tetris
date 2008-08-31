@@ -1,6 +1,9 @@
 /* tetris v0.2
  * mamikk'08 */
 
+#define NAME    "tetris (created by: mamikk)"
+#define VERSION "v0.2"
+
 /*
  * ----------------------------------------------------------------------------
  * "THE BEER-WARE LICENSE" (Revision 42):
@@ -1042,6 +1045,22 @@ static void game_over(double it, double t, unsigned int score) {
     glPopMatrix();
 }
 
+static void set_caption(double t, double fps)
+{
+    char buf[128];
+
+    (void)t;
+    (void)fps;
+
+#ifdef DEBUG
+    snprintf(buf, sizeof(buf), NAME " " VERSION " [t=%.0f, fps=%.0f]", t, fps);
+#else
+    snprintf(buf, sizeof(buf), NAME " " VERSION);
+#endif
+
+    SDL_WM_SetCaption(buf, NULL);
+}
+
 int main(int argc, char *argv[])
 {
     const SDL_VideoInfo *video_info;
@@ -1085,7 +1104,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    SDL_WM_SetCaption("duh", NULL);
+    set_caption(cur_timer, fps);
     SDL_ShowCursor(SDL_DISABLE);
 
     glViewport(0, 0, width, height);
@@ -1211,14 +1230,7 @@ int main(int argc, char *argv[])
             ticks_prev = ticks_now;
             framecount = 0;
 
-            if (fps == 0 && ticks_diff == 0) {
-                SDL_WM_SetCaption("duh", NULL);
-            } else {
-                char tmp[64];
-                snprintf(tmp, sizeof(tmp), "duh [t = %.0f, fps = %.0f]",
-                    (double)ticks_diff / 1000.0, fps);
-                SDL_WM_SetCaption(tmp, NULL);
-            }
+            set_caption(cur_timer, fps);
         }
     }
     
