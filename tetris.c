@@ -1055,7 +1055,7 @@ int main(int argc, char *argv[])
     double intro_start = 0.0;
     double game_over_start = 0.0;
     double pause_start = 0.0;
-    bool draw_ghost = true;
+    bool draw_ghost = false;
 
     (void)argc;
     (void)argv;
