@@ -1109,7 +1109,7 @@ int main(int argc, char *argv[])
 
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
-                case SDL_KEYUP:
+                case SDL_KEYDOWN:
                     switch (event.key.keysym.sym) {
                         case SDLK_ESCAPE:
                         case SDLK_q:
