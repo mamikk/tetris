@@ -1,0 +1,5 @@
+*.o
+tetris
+tetris.exe
+SDL.dll
+SDL-1.2.13
