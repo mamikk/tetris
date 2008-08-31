@@ -1080,7 +1080,7 @@ int main(int argc, char *argv[])
 
     video = SDL_SetVideoMode(width, height, 32, SDL_OPENGL);
     if (! video) {
-        fprintf(stderr, "SDL_GetVideoInfo: %s\n", SDL_GetError());
+        fprintf(stderr, "SDL_SetVideoInfo: %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 
