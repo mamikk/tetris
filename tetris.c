@@ -1,8 +1,8 @@
-/* tetris v0.2
+/* tetris v0.3
  * mamikk'08 */
 
 #define NAME    "tetris (created by: mamikk)"
-#define VERSION "v0.2"
+#define VERSION "v0.3"
 
 /*
  * ----------------------------------------------------------------------------
