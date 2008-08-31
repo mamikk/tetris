@@ -1,4 +1,4 @@
-/* tetris v0.1
+/* tetris v0.2
  * mamikk'08 */
 
 /*
@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <unistd.h>
 #include <time.h>
 #include <math.h>
 #include <SDL.h>
@@ -1043,7 +1042,7 @@ static void game_over(double it, double t, unsigned int score) {
     glPopMatrix();
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
     const SDL_VideoInfo *video_info;
     SDL_Surface *video;
@@ -1057,7 +1056,10 @@ int main(void)
     double game_over_start = 0.0;
     bool draw_ghost = true;
 
-    srand(time(NULL) ^ getpid() ^ getppid());
+    (void)argc;
+    (void)argv;
+
+    srand(time(NULL));
     
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) == -1) {
         fprintf(stderr, "SDL_Init: %s\n", SDL_GetError());
