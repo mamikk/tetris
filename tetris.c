@@ -733,7 +733,7 @@ static void draw_number(unsigned int n, const char *fmt, struct color_rgb color)
     char buf[64];
     char *s;
 
-    sprintf(buf, fmt, n);
+    snprintf(buf, sizeof(buf), fmt, n);
 
     glPushMatrix();
 
