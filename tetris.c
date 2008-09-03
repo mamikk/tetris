@@ -1142,6 +1142,7 @@ int main(int argc, char *argv[])
                         case SDLK_g:
                             draw_ghost = ! draw_ghost;
                             break;
+                        case SDLK_PAUSE:
                         case SDLK_p:
                             if (game_mode == IN_GAME) {
                                 game_mode = PAUSE;
