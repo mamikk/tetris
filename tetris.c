@@ -1233,6 +1233,8 @@ int main(int argc, char *argv[])
 
             set_caption(cur_timer, fps);
         }
+
+	usleep(20000);
     }
     
     SDL_Quit();
