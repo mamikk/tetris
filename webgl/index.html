@@ -1,0 +1,67 @@
+<html>
+<head>
+<title>mamikk's tetris.c ported to WebGL</title>
+<style>
+body {
+    background : White;
+    text-align: center;
+    color : Black;
+}
+</style>
+</head>
+
+<body onload="start();" onkeydown="game.keydown(event); return false;" onkeyup="game.keyup(event); return false;">
+
+<a href="https://github.com/kvisle/tetris"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+<h1><a href="https://github.com/mamikk/tetris/blob/master/tetris.c">mamikk's tetris.c</a> ported to WebGL</h1>
+<canvas id="gl" style="border : 1px solid Black;" width="800" height="600"></canvas>
+
+<p>
+Move left and right: Left/Right keys<br />
+Rotate: Up key<br />
+Move down: Down key<br />
+Drop brick: Space bar<br />
+Render ghost bricks: g<br />
+Pause: p<br />
+Reset: r<br />
+</p>
+
+<p>tetris.c was made by Martin Mikkelsen 2008.  WebGL port by Trygve Vea 2012.</p>
+
+
+</body>
+<!-- My code -->
+<script src="tetris.js"></script>
+<script src="gl.js"></script>
+
+<!-- Libraries -->
+<script src="lib/gl-matrix.js"></script>
+<script src="lib/String.js"></script>
+
+<!-- Shaders -->
+<script id="shader-fs" type="x-shader/x-fragment">
+precision mediump float;
+varying vec3 vColor;
+uniform vec3 uColor;
+
+void main(void) {
+  gl_FragColor = vec4((vColor*uColor), 1.0);
+}
+</script>
+
+<script id="shader-vs" type="x-shader/x-vertex">
+attribute vec3 aVertexPosition;
+attribute vec3 aColor;
+varying vec3 vColor;
+
+uniform mat4 uMVMatrix;
+uniform mat4 uPMatrix;
+
+void main(void) {
+  vColor = aColor;
+  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+}
+</script>
+
+</html>
