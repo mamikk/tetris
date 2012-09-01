@@ -1,3 +1,5 @@
+Float32Array.prototype.stack = [];
+
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations for WebGL
  * @author Brandon Jones
@@ -1865,6 +1867,13 @@
         return dest;
     };
 
+    mat4.pop = function(m) {
+        if (typeof m.stack === "undefined" || m.stack.length === 0) {
+            throw "invalid mat4.pop";
+        }
+        mat4.set(m.stack.pop(), m);
+    };
+
     mat4.push = function(m) {
         if (typeof m.stack === "undefined") {
             m.stack = [];
@@ -1873,13 +1882,6 @@
         var copy = mat4.create(m);
         copy.stack = m.stack;
         m.stack.push(copy);
-    };
-
-    mat4.pop = function(m) {
-        if (typeof m.stack === "undefined" || m.stack.length === 0) {
-            throw "invalid mat4.pop";
-        }
-        mat4.set(m.stack.pop(), m);
     };
 
     /**
