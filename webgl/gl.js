@@ -74,7 +74,6 @@ function getRenderer() {
         gl.enableVertexAttribArray(sp.cp);
 
         sp.cu = gl.getUniformLocation(sp, "uColor");
-//        gl.enableVertexAttribArray(sp.cu);
 
         sp.pMatrixUniform = gl.getUniformLocation(sp, "uPMatrix");
         sp.mvMatrixUniform = gl.getUniformLocation(sp, "uMVMatrix");

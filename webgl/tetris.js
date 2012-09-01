@@ -459,11 +459,11 @@ function tetrisStart() {
         return true;
     };
 
-    self.block_landed = function () {
+    self.block_landed = function (tetris) {
         var x, y;
 
         var curblock = [ [], [], [], [], [], [], [], [], [], [] ];
-        self.write_block(curblock, self.tetris.curblock, self.tetris.rotation, self.tetris.curblock_x, self.tetris.curblock_y);
+        self.write_block(curblock, tetris.curblock, tetris.rotation, tetris.curblock_x, tetris.curblock_y);
     
         for (x = 0; x < self.TETRIS_WIDTH; ++x) {
             if (curblock[x][0]) return true;
@@ -471,7 +471,7 @@ function tetrisStart() {
 
         for (x = 0; x < self.TETRIS_WIDTH; ++x) {
             for (y = 0; y < self.TETRIS_HEIGHT; ++y) {
-                if (! self.tetris.field[x][y]) continue;
+                if (! tetris.field[x][y]) continue;
                 if (curblock[x][y + 1]) return true;
             }
         }
@@ -526,8 +526,8 @@ function tetrisStart() {
         return ret;
     };
 
-    self.iterate = function () {
-        self.tetris.curblock_y--;
+    self.iterate = function (tetris) {
+        tetris.curblock_y--;
     };
 
     /* left: move block left */
@@ -555,12 +555,12 @@ function tetrisStart() {
     
     /* down: move block down */
     self.key_down = function () {
-        if (! self.block_landed()) self.iterate();
+        if (! self.block_landed(self.tetris)) self.iterate(self.tetris);
     };
     
     /* space: drop block */
     self.key_space = function () {
-        while (! self.block_landed()) self.iterate();
+        while (! self.block_landed(self.tetris)) self.iterate(self.tetris);
     };
 
 
@@ -569,7 +569,7 @@ function tetrisStart() {
         var u;
 
         if (t >= self.tetris.next_update) {
-            if (self.block_landed()) {
+            if (self.block_landed(self.tetris)) {
                 var curblock = [ [], [], [], [], [], [], [], [], [], [] ];
                 var nt;
     
@@ -596,7 +596,7 @@ function tetrisStart() {
                     is_game_over = true;
                 }
             } else {
-                self.iterate();
+                self.iterate(self.tetris);
             }
             u = 5.0 - Math.log((self.tetris.level / 4) + 1);
             u /= 10.0;
@@ -805,38 +805,43 @@ function tetrisStart() {
         self.r.popMatrix();
 
         /* ghost block */
-/*        if (self.draw_ghost) {
-            struct tetris gtetris;
+        if (self.draw_ghost) {
+            var gtetris = {
+                field : [ [], [], [], [], [], [], [], [], [], [] ],
+                rotation : self.tetris.rotation,
+                curblock : self.tetris.curblock,
+                curblock_x: self.tetris.curblock_x,
+                curblock_y : self.tetris.curblock_y
+            };
+            self.copy_field(gtetris.field, self.tetris.field);
 
-            memcpy(&gtetris, tetris, sizeof(*tetris));
+            while (! self.block_landed(gtetris)) self.iterate(gtetris);
+            self.write_block(curblock, gtetris.curblock, gtetris.rotation, gtetris.curblock_x, gtetris.curblock_y);
 
-            while (! block_landed(&gtetris)) iterate(&gtetris);
-            write_block(curblock, gtetris.curblock, gtetris.rotation, gtetris.curblock_x, gtetris.curblock_y);
-
-            glPushMatrix();
-            glTranslated(-12.0, -10.0, -20.0);
-            for (x = 0; x < TETRIS_WIDTH; ++x) {
-                glPushMatrix();
-                for (y = 0; y < TETRIS_VISIBLE_HEIGHT; ++y) {
-                    const struct color_rgb *origcolor;
-                    struct color_rgb color;
-                    int v;
+            self.r.pushMatrix();
+            self.r.translate([-12.0, -10.0, -20.0]);
+            for (x = 0; x < self.TETRIS_WIDTH; ++x) {
+                self.r.pushMatrix();
+                for (y = 0; y < self.TETRIS_VISIBLE_HEIGHT; ++y) {
+                    var origcolor;
+                    var color = [];
+                    var v;
 
                     v = curblock[x][y];
                     if (v) {
-                        origcolor = tetris_block_colors[v - 1];
-                        color.r = origcolor->r * 0.2;
-                        color.g = origcolor->g * 0.2;
-                        color.b = origcolor->b * 0.2;
-                        draw_box(color, 0.8);
+                        origcolor = self.tetris_block_colors[v - 1].slice(0);
+                        color[0] = origcolor[0] * 0.2;
+                        color[1] = origcolor[1] * 0.2;
+                        color[2] = origcolor[2] * 0.2;
+                        self.draw_box(color, 0.8);
                     }
-                    glTranslated(0.0, 1.0, 0.0);
+                    self.r.translate([0.0, 1.0, 0.0]);
                 }
-                glPopMatrix();
-                glTranslated(1.0, 0.0, 0.0);
+                self.r.popMatrix();
+                self.r.translate([1.0, 0.0, 0.0]);
             }
-            glPopMatrix();
-        }*/
+            self.r.popMatrix();
+        }
 
         /* wireframe crap */
         self.r.pushMatrix();
@@ -923,7 +928,7 @@ function tetrisStart() {
             case 38: if ( self.game_mode == 'IN_GAME' ) self.key_up();    break;
             case 40: if ( self.game_mode == 'IN_GAME' ) self.key_down();  break;
             case 32: if ( self.game_mode == 'IN_GAME' ) self.key_space(); break;
-            case 71: self.draw_ghost = ! self.draw_ghost; break;
+            case 71: self.draw_ghost = !self.draw_ghost; break;
             case 80:
                 if ( self.game_mode == 'IN_GAME' ) {
                     self.game_mode = 'PAUSE';
@@ -938,7 +943,6 @@ function tetrisStart() {
     };
 
     self.keyup = function (e) {
-//        console.log('Key up: ' + e.keyIdentifier);
     };
 
     self.r.initBuffer("box", box);
@@ -962,8 +966,6 @@ function tetrisStart() {
         ticks_now = self.getTicks();
         ticks_diff = ticks_now - self.ticks_start;
         self.cur_timer = ticks_diff / 1000.0;
-
-//        console.log('ticks_now: ' + ticks_now + ', ticks_diff: ' + ticks_diff + ', cur_timer: ' + cur_timer);
 
         if (self.game_mode == 'INTRO' && self.cur_timer >= (self.intro_start + 5.0))
             self.do_reset = true;
